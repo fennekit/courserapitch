@@ -1,4 +1,4 @@
-# Coursera Developing Data Products
+# Coursera Developing Data Products assignment
 
 [ShinyApp](https://fennekit.shinyapps.io/pitch/)
 

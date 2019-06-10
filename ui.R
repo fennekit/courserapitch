@@ -35,7 +35,14 @@ shinyUI(fluidPage(
                             "diamond-open" = "diamond",
                             "cross"="cross" )
                         ),
-            checkboxInput("circle", label = "Circle Markers", value = TRUE)
+            checkboxInput("markersize", label = "Symbol size", value = TRUE), 
+            conditionalPanel(
+                condition = "input.markersize == true", # javascript condition
+                selectInput("markersizemethod", "Symbol size method:",
+                            c(  "area" = "area", 
+                                "diameter" ="diameter"))
+            )
+            
             
         ),
 

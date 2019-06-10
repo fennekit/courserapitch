@@ -10,17 +10,19 @@
 library(shiny)
 library(plotly)
 
-mymarker <- function(p, circle, type) {
-    if (circle) 
+mymarker <- function(p, size, sizemode, sizeref, type) {
+    
+    
+    if (size) 
     {
         add_markers(p, x = ~x, y = ~y, z = ~z, color = ~c, 
                     size = ~r,
-                    marker = list(symbol = type, sizemode = 'diameter'))
+                    marker = list(symbol = type, sizeref = sizeref, sizemode = sizemode))
     }
     else
     {
         add_markers(p, x = ~x, y = ~y, z = ~z, color = ~c, 
-                    size = ~r, marker =list(symbol = type))
+                    size = ~r, marker = list(symbol = type))
     }    
 }
 
@@ -28,6 +30,7 @@ mymarker <- function(p, circle, type) {
 shinyServer(function(input, output) {
 
     output$scatter3Dplot <- renderPlotly({
+        set.seed(5)
         n <- input$npoints;
         
         x <- as.numeric(runif(n , 0, 100))
@@ -35,14 +38,20 @@ shinyServer(function(input, output) {
         
         z <- as.numeric(runif(n , 0, 100))
         
-        r <- as.numeric(runif(n, 2, 50))
+        r <- as.numeric(runif(n, 1, 10))
+        
         c <- as.numeric(runif(n, 0, 255))
         
         data <-data.frame(x, y, z, r, c)
         
+        size = 10;
+        sizeref = ifelse(input$markersizemethod=='area', 
+                         2.*max(size)/(max(r)**2),
+                         2.*max(size)/(max(r))) 
+        
         p <- plot_ly(data, 
                      type="scatter3d") %>%
-            mymarker(input$circle, input$symboltype)
+            mymarker(input$markersize, input$markersizemethod, sizeref, input$symboltype)
         p
         
     })
