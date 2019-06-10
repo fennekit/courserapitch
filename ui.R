@@ -25,6 +25,8 @@ shinyUI(fluidPage(
                         min = 1,
                         max = 100,
                         value = 50),
+            hr(),
+            helpText("Number of points to show in the 3d plot"),
             
             selectInput("symboltype", "Marker symbol:",
                         c(  "circle" = "circle", 
@@ -35,15 +37,21 @@ shinyUI(fluidPage(
                             "diamond-open" = "diamond",
                             "cross"="cross" )
                         ),
+            
+            helpText("Type of symbol to use for each point"),
+            hr(),
             checkboxInput("markersize", label = "Symbol size", value = TRUE), 
+            
+            helpText("Make size of the marker dependent on the points r value"),
+            hr(),
+            
             conditionalPanel(
                 condition = "input.markersize == true", # javascript condition
                 selectInput("markersizemethod", "Symbol size method:",
                             c(  "area" = "area", 
-                                "diameter" ="diameter"))
+                                "diameter" ="diameter")),
+                helpText("Method to use for determining the size of the marker")
             )
-            
-            
         ),
 
         # Show a plot of the generated distribution
@@ -53,7 +61,7 @@ shinyUI(fluidPage(
                          plotlyOutput("scatter3Dplot",
                                       height = "800px",
                                       width = "800px")),
-                tabPanel("Help", verbatimTextOutput("summary")),
+                tabPanel("Help", verbatimTextOutput("help")),
                 tabPanel("Table", tableOutput("table"))
             )
            

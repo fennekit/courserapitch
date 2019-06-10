@@ -26,33 +26,38 @@ mymarker <- function(p, size, sizemode, sizeref, type) {
     }    
 }
 
+createDataframe <- function(n)
+{
+    set.seed(5)
+    x <- as.numeric(runif(n , 0, 100))
+    y <- as.numeric(runif(n , 0, 100))
+    
+    z <- as.numeric(runif(n , 0, 100))
+    
+    r <- as.numeric(runif(n, 1, 10))
+    
+    c <- as.numeric(runif(n, 0, 255))
+    
+    data <-data.frame(x, y, z, r, c)
+}
+    
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
 
+    currentDataSet = reactive({createDataframe(as.numeric(input$npoints))})
+    maxR = reactive({currentDataSet()$r})
+    
     output$scatter3Dplot <- renderPlotly({
-        set.seed(5)
-        n <- input$npoints;
-        
-        x <- as.numeric(runif(n , 0, 100))
-        y <- as.numeric(runif(n , 0, 100))
-        
-        z <- as.numeric(runif(n , 0, 100))
-        
-        r <- as.numeric(runif(n, 1, 10))
-        
-        c <- as.numeric(runif(n, 0, 255))
-        
-        data <-data.frame(x, y, z, r, c)
-        
         size = 10;
         sizeref = ifelse(input$markersizemethod=='area', 
-                         2.*max(size)/(max(r)**2),
-                         2.*max(size)/(max(r))) 
+                         2.*max(size)/(max(maxR())**2),
+                         2.*max(size)/(max(maxR()))) 
         
-        p <- plot_ly(data, 
+        p <- plot_ly(currentDataSet(), 
                      type="scatter3d") %>%
             mymarker(input$markersize, input$markersizemethod, sizeref, input$symboltype)
         p
-        
     })
+    
+    output$table <- renderTable({currentDataSet()})
 })
