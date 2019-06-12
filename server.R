@@ -45,17 +45,18 @@ createDataframe <- function(n)
 shinyServer(function(input, output) {
 
     currentDataSet = reactive({createDataframe(as.numeric(input$npoints))})
-    maxR = reactive({currentDataSet()$r})
-    
-    output$scatter3Dplot <- renderPlotly({
+    maxR = reactive({max(currentDataSet()$r)})
+    sizeref = reactive({
         size = 10;
-        sizeref = ifelse(input$markersizemethod=='area', 
-                         2.*max(size)/(max(maxR())**2),
-                         2.*max(size)/(max(maxR()))) 
+        ifelse(input$markersizemethod=='area', 
+                         2.*max(size)/(maxR()**2),
+                         2.*max(size)/(maxR())) 
+    })
+    output$scatter3Dplot <- renderPlotly({
         
         p <- plot_ly(currentDataSet(), 
                      type="scatter3d") %>%
-            mymarker(input$markersize, input$markersizemethod, sizeref, input$symboltype)
+            mymarker(input$markersize, input$markersizemethod, sizeref(), input$symboltype)
         p
     })
     
